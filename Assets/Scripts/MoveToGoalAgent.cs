@@ -7,13 +7,14 @@ using UnityEngine;
 public class MoveToGoalAgent : Agent
 {
     [SerializeField] private Transform target;
-    [SerializeField] private Character _character;
+    [SerializeField] private Character character;
+    [SerializeField] private Transform startPoint;
 
     public override void OnActionReceived(ActionBuffers actions)
     {
         var moveX = actions.ContinuousActions[0];
         var moveZ = actions.ContinuousActions[1];
-        _character.Move(moveX, moveZ);
+        character.Move(moveX, moveZ);
     }
 
 
@@ -22,8 +23,21 @@ public class MoveToGoalAgent : Agent
         if (other.name == "Target")
         {
             AddReward(1f);
+            Debug.Log($"{other.name}");
             EndEpisode();
         }
+        if (other.name == "Wall")
+        {
+            AddReward(-1f);
+            Debug.Log($"{other.name}");
+            EndEpisode();
+        }
+    }
+
+    public override void OnEpisodeBegin()
+    {
+        Debug.Log("Episode begin");
+        transform.position = startPoint.position;
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
@@ -38,6 +52,4 @@ public class MoveToGoalAgent : Agent
         sensor.AddObservation(transform.position);
         sensor.AddObservation(target.position);
     }
-
-    public override void OnEpisodeBegin() { }
 }
