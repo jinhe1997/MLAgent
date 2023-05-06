@@ -8,13 +8,13 @@ public class MoveToGoalAgent : Agent
 {
     [SerializeField] private Transform target;
     [SerializeField] private Character _character;
+
     public override void OnActionReceived(ActionBuffers actions)
     {
         var moveX = actions.ContinuousActions[0];
         var moveZ = actions.ContinuousActions[1];
         _character.Move(moveX, moveZ);
     }
-
 
 
     private void OnTriggerEnter(Collider other)
@@ -24,6 +24,13 @@ public class MoveToGoalAgent : Agent
             AddReward(1f);
             EndEpisode();
         }
+    }
+
+    public override void Heuristic(in ActionBuffers actionsOut)
+    {
+        var continuousActionsOut = actionsOut.ContinuousActions;
+        continuousActionsOut[0] = Input.GetAxis("Horizontal");
+        continuousActionsOut[1] = Input.GetAxis("Vertical");
     }
 
     public override void CollectObservations(VectorSensor sensor)
